@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("deprecation")
 public class ProjectServiceIT extends AbstractGoodDataIT {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();

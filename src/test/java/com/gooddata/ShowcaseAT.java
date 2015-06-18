@@ -14,8 +14,9 @@ import com.gooddata.dataload.processes.Schedule;
 import com.gooddata.dataload.processes.ScheduleState;
 import com.gooddata.dataset.DatasetManifest;
 import com.gooddata.dataset.DatasetService;
+import com.gooddata.featureflag.FeatureFlag;
+import com.gooddata.featureflag.FeatureFlags;
 import com.gooddata.gdc.DataStoreService;
-import com.gooddata.gdc.FeatureFlag;
 import com.gooddata.md.Attribute;
 import com.gooddata.md.Entry;
 import com.gooddata.md.Fact;
@@ -214,8 +215,8 @@ public class ShowcaseAT {
     }
 
     @Test(groups = "project", dependsOnMethods = "listProjectFeatureFlags")
-    public void listAggregatedFeatureFlags() throws Exception {
-        final List<FeatureFlag> flags = gd.getProjectService().listAggregatedFeatureFlags(project);
+    public void getFeatureFlags() throws Exception {
+        final FeatureFlags flags = gd.getFeatureFlagService().getFeatureFlags(project);
 
         assertThat(flags, containsInAnyOrder(
                 new FeatureFlag("mostRecentFeatureFlag", true),
