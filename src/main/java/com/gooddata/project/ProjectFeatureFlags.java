@@ -1,7 +1,5 @@
 package com.gooddata.project;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -10,12 +8,20 @@ import org.codehaus.jackson.annotate.JsonTypeName;
 import org.springframework.web.util.UriTemplate;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import static com.gooddata.util.Validate.notEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
+
+/**
+ * @deprecated use {@link com.gooddata.featureflag.FeatureFlagService} and {@link com.gooddata.featureflag.ProjectFeatureFlags} instead
+ */
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonTypeName("featureFlags")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated
 public class ProjectFeatureFlags {
 
     public static final String FEATURE_FLAGS_URI = Project.URI + "/projectFeatureFlags";

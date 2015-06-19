@@ -16,6 +16,8 @@ import com.gooddata.dataset.DatasetManifest;
 import com.gooddata.dataset.DatasetService;
 import com.gooddata.featureflag.FeatureFlag;
 import com.gooddata.featureflag.FeatureFlags;
+import com.gooddata.featureflag.ProjectFeatureFlag;
+import com.gooddata.featureflag.ProjectFeatureFlags;
 import com.gooddata.gdc.DataStoreService;
 import com.gooddata.md.Attribute;
 import com.gooddata.md.Entry;
@@ -33,7 +35,6 @@ import com.gooddata.md.report.ReportDefinition;
 import com.gooddata.model.ModelDiff;
 import com.gooddata.model.ModelService;
 import com.gooddata.project.Project;
-import com.gooddata.project.ProjectFeatureFlag;
 import com.gooddata.project.ProjectService;
 import com.gooddata.project.ProjectValidationResults;
 import com.gooddata.project.Role;
@@ -89,6 +90,7 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.fail;
 
+@SuppressWarnings("deprecation")
 public class ShowcaseAT {
 
     private static final String PROJECT_FEATURE_FLAG = "testFeatureFlag";
@@ -198,23 +200,24 @@ public class ShowcaseAT {
 
     @Test(groups = "project", dependsOnMethods = "createProject")
     public void createProjectFeatureFlag() throws Exception {
-        final ProjectFeatureFlag featureFlag =
-                gd.getProjectService().createFeatureFlag(project, new ProjectFeatureFlag(PROJECT_FEATURE_FLAG));
+        final com.gooddata.project.ProjectFeatureFlag featureFlag = gd.getProjectService()
+                        .createFeatureFlag(project, new com.gooddata.project.ProjectFeatureFlag(PROJECT_FEATURE_FLAG));
         checkFeatureFlag(featureFlag, true);
     }
 
     @Test(groups = "project", dependsOnMethods = "createProjectFeatureFlag")
-    public void listProjectFeatureFlags() throws Exception {
-        gd.getProjectService().createFeatureFlag(project, new ProjectFeatureFlag("mostRecentFeatureFlag"));
+    public void getProjectFeatureFlags() throws Exception {
+        gd.getProjectService()
+                .createFeatureFlag(project, new com.gooddata.project.ProjectFeatureFlag("mostRecentFeatureFlag"));
 
-        final List<ProjectFeatureFlag> projectFeatureFlags = gd.getProjectService().listFeatureFlags(project);
+        final ProjectFeatureFlags flags = gd.getFeatureFlagService().getProjectFeatureFlags(project);
 
-        assertThat(projectFeatureFlags, containsInAnyOrder(
+        assertThat(flags, containsInAnyOrder(
                 new ProjectFeatureFlag("mostRecentFeatureFlag", true),
                 new ProjectFeatureFlag(PROJECT_FEATURE_FLAG, true)));
     }
 
-    @Test(groups = "project", dependsOnMethods = "listProjectFeatureFlags")
+    @Test(groups = "project", dependsOnMethods = "getProjectFeatureFlags")
     public void getFeatureFlags() throws Exception {
         final FeatureFlags flags = gd.getFeatureFlagService().getFeatureFlags(project);
 
@@ -225,31 +228,34 @@ public class ShowcaseAT {
 
     @Test(groups = "project", dependsOnMethods = "createProjectFeatureFlag")
     public void getProjectFeatureFlag() throws Exception {
-        final ProjectFeatureFlag featureFlag =
+        final com.gooddata.project.ProjectFeatureFlag featureFlag =
                 gd.getProjectService().getFeatureFlag(project, PROJECT_FEATURE_FLAG);
         checkFeatureFlag(featureFlag, true);
     }
 
     @Test(groups = "project", dependsOnMethods = "getProjectFeatureFlag")
     public void updateProjectFeatureFlag() throws Exception {
-        final ProjectFeatureFlag featureFlag =
+        final com.gooddata.project.ProjectFeatureFlag featureFlag =
                 gd.getProjectService().getFeatureFlag(project, PROJECT_FEATURE_FLAG);
 
         // disable (update) feature flag
         featureFlag.setEnabled(false);
-        final ProjectFeatureFlag disabledFlag = gd.getProjectService().updateFeatureFlag(featureFlag);
+        final com.gooddata.project.ProjectFeatureFlag disabledFlag = gd.getProjectService().updateFeatureFlag(
+                featureFlag);
         checkFeatureFlag(disabledFlag, false);
 
         // enable again
         featureFlag.setEnabled(true);
-        final ProjectFeatureFlag enabledFlag = gd.getProjectService().updateFeatureFlag(featureFlag);
+        final com.gooddata.project.ProjectFeatureFlag enabledFlag = gd.getProjectService().updateFeatureFlag(
+                featureFlag);
         checkFeatureFlag(enabledFlag, true);
     }
 
     @Test(groups = "project", dependsOnMethods = "createProjectFeatureFlag")
     public void deleteProjectFeatureFlag() throws Exception {
-        final ProjectFeatureFlag featureFlag =
-                gd.getProjectService().createFeatureFlag(project, new ProjectFeatureFlag("temporaryFeatureFlag"));
+        final com.gooddata.project.ProjectFeatureFlag featureFlag =
+                gd.getProjectService().createFeatureFlag(project,
+                        new com.gooddata.project.ProjectFeatureFlag("temporaryFeatureFlag"));
 
         gd.getProjectService().deleteFeatureFlag(featureFlag);
 
@@ -551,8 +557,7 @@ public class ShowcaseAT {
     }
 
 
-
-    private void checkFeatureFlag(ProjectFeatureFlag featureFlag, boolean expectedValue) {
+    private void checkFeatureFlag(com.gooddata.project.ProjectFeatureFlag featureFlag, boolean expectedValue) {
         assertThat(featureFlag, is(notNullValue()));
         assertThat(featureFlag.getName(), is(PROJECT_FEATURE_FLAG));
         assertThat(featureFlag.getEnabled(), is(expectedValue));

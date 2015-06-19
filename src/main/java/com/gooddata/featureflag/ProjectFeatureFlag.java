@@ -1,4 +1,7 @@
-package com.gooddata.project;
+/*
+ * Copyright (C) 2007-2015, GoodData(R) Corporation. All rights reserved.
+ */
+package com.gooddata.featureflag;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -14,18 +17,15 @@ import static com.gooddata.util.Validate.notNull;
 /**
  * Project feature flag is a boolean flag used for enabling / disabling some specific feature of GoodData platform
  * on per project basis.
- *
- * @deprecated use {@link com.gooddata.featureflag.FeatureFlagService} and {@link com.gooddata.featureflag.ProjectFeatureFlags} instead
  */
 @JsonTypeName("featureFlag")
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-@Deprecated
 public class ProjectFeatureFlag {
 
-    public static final String FEATURE_FLAG_URI = ProjectFeatureFlags.FEATURE_FLAGS_URI + "/{featureFlag}";
-    public static final UriTemplate FEATURE_FLAG_TEMPLATE = new UriTemplate(FEATURE_FLAG_URI);
+    public static final String PROJECT_FEATURE_FLAG_URI = ProjectFeatureFlags.PROJECT_FEATURE_FLAGS_URI + "/{featureFlag}";
+    public static final UriTemplate PROJECT_FEATURE_FLAG_TEMPLATE = new UriTemplate(PROJECT_FEATURE_FLAG_URI);
 
     private final String name;
     private boolean enabled;
@@ -54,8 +54,8 @@ public class ProjectFeatureFlag {
 
     @JsonCreator
     ProjectFeatureFlag(@JsonProperty("key") String name,
-                               @JsonProperty("value") boolean enabled,
-                               @JsonProperty("links") Links links) {
+                       @JsonProperty("value") boolean enabled,
+                       @JsonProperty("links") Links links) {
         this.name = name;
         this.enabled = enabled;
         this.links = links;
@@ -118,6 +118,7 @@ public class ProjectFeatureFlag {
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class Links {
         private final String self;
+
         @JsonCreator
         public Links(@JsonProperty("self") String self) {
             this.self = self;

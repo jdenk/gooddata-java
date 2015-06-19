@@ -344,6 +344,7 @@ public class ProjectServiceIT extends AbstractGoodDataIT {
 
         mockListFeatureFlagsRequest();
 
+        @SuppressWarnings("deprecation")
         final List<ProjectFeatureFlag> projectFeatureFlags = gd.getProjectService().listFeatureFlags(enabled);
 
         assertThat(projectFeatureFlags, contains(
