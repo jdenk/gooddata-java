@@ -200,15 +200,14 @@ public class ShowcaseAT {
 
     @Test(groups = "project", dependsOnMethods = "createProject")
     public void createProjectFeatureFlag() throws Exception {
-        final com.gooddata.project.ProjectFeatureFlag featureFlag = gd.getProjectService()
-                        .createFeatureFlag(project, new com.gooddata.project.ProjectFeatureFlag(PROJECT_FEATURE_FLAG));
-        checkFeatureFlag(featureFlag, true);
+        final ProjectFeatureFlag featureFlag = gd.getFeatureFlagService()
+                        .createProjectFeatureFlag(project, new ProjectFeatureFlag(PROJECT_FEATURE_FLAG));
+        checkProjectFeatureFlag(featureFlag, true);
     }
 
     @Test(groups = "project", dependsOnMethods = "createProjectFeatureFlag")
     public void getProjectFeatureFlags() throws Exception {
-        gd.getProjectService()
-                .createFeatureFlag(project, new com.gooddata.project.ProjectFeatureFlag("mostRecentFeatureFlag"));
+        gd.getFeatureFlagService().createProjectFeatureFlag(project, new ProjectFeatureFlag("mostRecentFeatureFlag"));
 
         final ProjectFeatureFlags flags = gd.getFeatureFlagService().getProjectFeatureFlags(project);
 
@@ -558,6 +557,12 @@ public class ShowcaseAT {
 
 
     private void checkFeatureFlag(com.gooddata.project.ProjectFeatureFlag featureFlag, boolean expectedValue) {
+        assertThat(featureFlag, is(notNullValue()));
+        assertThat(featureFlag.getName(), is(PROJECT_FEATURE_FLAG));
+        assertThat(featureFlag.getEnabled(), is(expectedValue));
+    }
+
+    private void checkProjectFeatureFlag(ProjectFeatureFlag featureFlag, boolean expectedValue) {
         assertThat(featureFlag, is(notNullValue()));
         assertThat(featureFlag.getName(), is(PROJECT_FEATURE_FLAG));
         assertThat(featureFlag.getEnabled(), is(expectedValue));

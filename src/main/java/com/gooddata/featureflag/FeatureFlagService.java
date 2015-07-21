@@ -9,6 +9,8 @@ import com.gooddata.project.Project;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+
 import static com.gooddata.featureflag.FeatureFlags.AGGREGATED_FEATURE_FLAGS_TEMPLATE;
 import static com.gooddata.featureflag.ProjectFeatureFlags.PROJECT_FEATURE_FLAGS_TEMPLATE;
 import static com.gooddata.util.Validate.notNull;
@@ -73,6 +75,37 @@ public class FeatureFlagService extends AbstractService {
         } catch (GoodDataException | RestClientException e) {
             throw new GoodDataException("Unable to list project feature flags for project ID=" + project.getId(), e);
         }
+    }
+
+    /**
+     * Creates new feature flag for given project.
+     * <p/>
+     * Usually, it doesn't make sense to create feature flag that is disabled because
+     * this is the same as having no feature flag at all.
+     *
+     * @param project project for which the feature flag should be created, cannot be null
+     * @param featureFlag feature flag to be created, cannot be null
+     */
+    public ProjectFeatureFlag createProjectFeatureFlag(final Project project, final ProjectFeatureFlag featureFlag) {
+        notNull(project, "project");
+        notNull(featureFlag, "featureFlag");
+
+        final String featureFlagsUri = PROJECT_FEATURE_FLAGS_TEMPLATE.expand(project.getId()).toString();
+
+        try {
+            final URI featureFlagUri = restTemplate.postForLocation(featureFlagsUri, featureFlag);
+            if (featureFlagUri == null) {
+                throw new RuntimeException("URI of new featureFlag can't be null");
+            }
+            return getProjectFeatureFlag(featureFlagUri.toString());
+        } catch (GoodDataException | RestClientException e) {
+            throw new GoodDataException("Unable to create feature flag: " + featureFlag, e);
+        }
+    }
+
+
+    private ProjectFeatureFlag getProjectFeatureFlag(final String featureFlagUri) {
+        return restTemplate.getForObject(featureFlagUri, ProjectFeatureFlag.class);
     }
 
 }
